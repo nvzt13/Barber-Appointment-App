@@ -10,11 +10,12 @@ const Nav = () => {
         <div className="container mx-auto flex items-center justify-between py-4 px-6">
           <div className="flex items-center">
             <Scissors />
-            <h1 className="text-2xl font-bold ml-2">Nevzat Berber</h1>
+            <Link href="/" > <h1 className="text-2xl font-bold ml-2">Nevzat Berber</h1></Link>
           </div>
           <ul className="flex items-cetter justify-center space-x-8 text-lg">
             <Link href="/" > Home </Link>
             <Link href="/about" > About </Link>
+            <Link href="/api/auth/signout" > logout </Link>
             <Button className="lg bg-transparent border-2">Admin</Button>
           </ul>
         </div>

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 
@@ -16,30 +16,33 @@ function createAppointments(openingTime, closingTime) {
 }
 
 const Appointment = () => {
-  const availableAppointments = createAppointments(9, 22);
+  const openingTime = 9;
+  const closingTime = 22;
+  const availableAppointments = createAppointments(openingTime, closingTime);
 
-  const { data: session, status } = useSession(); // Add status
+  const { data: session } = useSession();
   const [barbers, setBarbers] = useState([]);
   const [formData, setFormData] = useState({
-    customerName: session?.user?.name || "",
+    userId: session?.user?.id || "",
     barberId: "",
     date: "",
-    hour: "",
+    hour: "", // Store the selected hour here
   });
 
   useEffect(() => {
+    // Fetch barbers from API
     async function fetchBarbers() {
       try {
         const response = await fetch("/api/barbers", {
-          method: "GET",
+          method: "GET", // GET method
         });
-
+    
         if (!response.ok) {
           throw new Error(`Error: ${response.status} ${response.statusText}`);
         }
-
+    
         const data = await response.json();
-        setBarbers(data); // Set barbers in state
+        setBarbers(data); // Set fetched barbers to state
       } catch (error) {
         console.error("Failed to fetch barbers:", error);
       }
@@ -47,7 +50,6 @@ const Appointment = () => {
 
     fetchBarbers();
   }, []);
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,55 +61,32 @@ const Appointment = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  console.log(formData)
-    if (!formData.customerName) {
-      alert("Please login first");
-      return;
-    }
-  
-    if (!formData.barberId || !formData.date || !formData.hour) {
-      alert("Please fill all required fields");
-      return;
-    }
-  
+
+    // Send appointment data to the backend
     try {
-      const res = await fetch('/api/appointments', {
-        method: 'POST',
+      const response = await fetch("/api/appointments/create", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          customerId: session?.user?.id, // Kullanıcının oturum ID'si
-          barberId: formData.barberId,
-          date: formData.date,
-          time: formData.hour, // `hour` yerine `time` kullanmalısınız
-        }),
+        body: JSON.stringify(formData),
       });
-  
-      if (res.ok) {
-        alert("Appointment created successfully!");
-      } else {
-        const errorData = await res.json();
-        console.error("Failed to create appointment:", errorData.message);
+
+      if (!response.ok) {
+        throw new Error("Failed to create appointment");
       }
+
+      const result = await response.json();
+      alert("Randevu başarıyla alındı!");
     } catch (error) {
-      console.error("An error occurred:", error);
+      alert("Bir hata oluştu: " + error.message);
     }
   };
-  
-  if (status === "unauthenticated") {
-    return (
-      <div className="p-6 bg-gray-900 text-white text-center">
-        <p>Please login to make an appointment</p>
-      </div>
-    );
-  }
 
   return (
     <section className="p-6 bg-gray-900 text-white">
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
         <h2 className="text-2xl font-semibold text-center mb-6">Randevu Al</h2>
-
         {session && (
           <div>
             <p>Hoşgeldin {session.user?.name}</p>
@@ -150,7 +129,7 @@ const Appointment = () => {
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="p-3 rounded-lg bg-gray-800 text-white"
+            className="w-full p-3 rounded-lg bg-gray-800 text-white"
           />
         </div>
 
@@ -162,9 +141,7 @@ const Appointment = () => {
                 key={index}
                 type="button"
                 onClick={() => setFormData({ ...formData, hour })}
-                className={`p-3 rounded-lg ${
-                  formData.hour === hour ? "bg-blue-600" : "bg-gray-800"
-                } hover:bg-gray-700 text-center`}
+                className={`p-3 rounded-lg ${formData.hour === hour ? 'bg-blue-600' : 'bg-gray-800'} hover:bg-gray-700 text-center`}
               >
                 {hour}
               </button>
@@ -173,10 +150,7 @@ const Appointment = () => {
         </div>
 
         <div className="text-center">
-          <button
-            type="submit"
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg"
-          >
+          <button type="submit" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg">
             Randevuyu Onayla
           </button>
         </div>

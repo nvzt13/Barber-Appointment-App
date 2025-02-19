@@ -18,8 +18,8 @@ const Services = () => {
                 <Image
                   src={card.image}
                   alt="card"
-                  layout="fill" 
-                  objectFit="cover"
+                  width={500}
+                  height={500}
                 />
               </div>
 
