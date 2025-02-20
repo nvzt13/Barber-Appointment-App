@@ -1,42 +1,120 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth"; // Auth ayarlarının olduğu dosya
-import { prisma } from "@/lib/prisma"; // Prisma client
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
-// POST request handler
 export async function POST(req: NextRequest) {
-  // Kullanıcı doğrulama
   const session = await auth();
 
-  if (!session) {
+  if (!session?.user?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const { customerId, barberId, date, time } = await req.json();
+    const { date, time, barberId } = await req.json();
+    console.log("Received data:", {
+      date,
+      time,
+      barberId,
+      userId: session.user.id,
+    });
 
-    // Gerekli alanların kontrolü
-    if (!customerId || !barberId || !date || !time) {
+    if (!date || !time || !barberId) {
       return NextResponse.json(
         { message: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    // Randevuyu veritabanına kaydet
-    const appointment = await prisma.appointment.create({
-      data: {
-        customerId,
+    // Check for existing appointment
+    const existingAppointment = await prisma.appointment.findFirst({
+      where: {
         barberId,
-        date: date,
-        time,  // Burada 'time' kullanmalısınız, 'hour' değil
-        status: "pending", // or any appropriate default status
+        date: new Date(date),
+        time,
       },
     });
 
+    if (existingAppointment) {
+      return NextResponse.json(
+        { message: "This time slot is already booked" },
+        { status: 409 }
+      );
+    }
+
+    // First check if barber exists
+    const barber = await prisma.barber.findUnique({
+      where: { id: barberId },
+    });
+
+    if (!barber) {
+      console.log("Barber not found:", barberId);
+      return NextResponse.json(
+        { message: "Barber not found" },
+        { status: 404 }
+      );
+    }
+
+    const parsedDate = new Date(date);
+    console.log("Creating appointment with:", {
+      customerId: session.user.id,
+      barberId,
+      date: parsedDate,
+      time,
+    });
+
+    const appointment = await prisma.appointment.create({
+      data: {
+        customer: {
+          connect: { id: session.user.id },
+        },
+        barber: {
+          connect: { id: barberId },
+        },
+        date: parsedDate,
+        time,
+        status: "pending",
+      },
+    });
+
+    console.log("Created appointment:", appointment);
     return NextResponse.json(appointment, { status: 201 });
-  } catch (error) {
+  } catch (err) {
+    // Proper error handling with type checking
+    const error = err as Error;
+
+    console.error("Appointment creation error:", {
+      message: error.message,
+      name: error.name,
+      stack: error.stack,
+    });
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      switch (error.code) {
+        case "P2003":
+          return NextResponse.json(
+            { message: "Invalid reference ID" },
+            { status: 400 }
+          );
+        case "P2002":
+          return NextResponse.json(
+            { message: "This appointment slot is already taken" },
+            { status: 409 }
+          );
+        default:
+          return NextResponse.json(
+            { message: "Database error occurred" },
+            { status: 500 }
+          );
+      }
+    }
+
     return NextResponse.json(
-      { message: "Something went wrong", error },
+      {
+        message: "Failed to create appointment",
+        details:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
+      },
       { status: 500 }
     );
   }
