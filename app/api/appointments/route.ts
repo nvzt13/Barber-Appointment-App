@@ -119,3 +119,50 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function DELETE(req: NextRequest ) {
+  const session = await auth();
+
+  const { appointmentId } = await req.json();
+  console.log(appointmentId + "_____________________________");
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!appointmentId) {
+    return NextResponse.json({ message: "Appointment ID is required" }, { status: 400 });
+  }
+
+  try {
+    const isAdmin = await prisma.user.findFirst({
+      where: {
+        id: session.user.id,
+        role: "ADMIN"
+      }
+    });
+
+    const existingAppointment = await prisma.appointment.findUnique({
+      where: { id: appointmentId },
+    });
+
+    if (!existingAppointment) {
+      return NextResponse.json({ message: "Appointment not found" }, { status: 404 });
+    }
+
+    // Eğer admin değilse ve randevu sahibi değilse, işlemi reddet
+    if (!isAdmin && existingAppointment.userId !== session.user.id) {
+      return NextResponse.json({ message: "Not authorized to delete this appointment" }, { status: 403 });
+    }
+
+    // Randevuyu silelim
+    await prisma.appointment.delete({
+      where: { id: appointmentId },
+    });
+
+    return NextResponse.json({ message: "Appointment deleted successfully" }, { status: 200 });
+  } catch (err) {
+    console.error("Error deleting appointment:", err);
+    return NextResponse.json({ message: "Failed to delete appointment" }, { status: 500 });
+  }
+}
