@@ -1,9 +1,13 @@
+"use client"
 import { Scissors } from "lucide-react";
 import React from "react";
+import {useSession}  from "next-auth/react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 const Nav = () => {
+  const {data: session} = useSession()
   return (
     <div className="bg-gray-700 h-16 text-white" >
       <nav className="absolute top-0 left-0 w-full">
@@ -15,8 +19,20 @@ const Nav = () => {
           <ul className="flex items-cetter justify-center space-x-8 text-lg">
             <Link href="/" > Home </Link>
             <Link href="/about" > About </Link>
-            <Link href="/api/auth/signout" > logout </Link>
-            <Button className="lg bg-transparent border-2">Admin</Button>
+                              {
+                session?.user ? 
+                <Link href="/profile">
+                                  <Image src={session?.user.image}
+                width={50}
+                height={50}
+                alt={session?.user.name} />
+                </Link>
+               : <Link href={"/api/auth/signin"}>
+                <Button>
+                  login
+                </Button>
+              </Link>
+              }
           </ul>
         </div>
       </nav>

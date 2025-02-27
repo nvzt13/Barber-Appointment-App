@@ -2,7 +2,7 @@ import { useState } from "react";
 
 interface useCRUDProps {
   endPoint: string;
-  crud: string;
+  crud?: string;
   data?: null;
 }
 
