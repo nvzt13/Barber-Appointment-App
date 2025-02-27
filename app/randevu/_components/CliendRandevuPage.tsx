@@ -19,11 +19,15 @@ const ClientRandevePage: React.FC<ClientRandevePageProps> = ({ barbers }) => {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
-
+ 
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [
     fetchBlogData,
     { loading: blogDateLoading, error: blogDateError, responseData: blogDate },
+  ] = useCRUD();
+  const [
+    createOrUpdateAppointment,
+    { loading: appointmentLoading, error: appointmentError, responseData: appointmentData },
   ] = useCRUD();
 
   // Güncellenmek için yönlendirilecek olan randevuyu al
@@ -33,7 +37,6 @@ const ClientRandevePage: React.FC<ClientRandevePageProps> = ({ barbers }) => {
     : null;
   
 
-test
   const [formData, setFormData] = useState<FormDataProps>({
     id: parseAppointmentToBeUpdated?.id || "",
     barberId: parseAppointmentToBeUpdated?.barberId || "",
@@ -64,11 +67,10 @@ test
       alert("Lütfen bir saat seçin!");
       return;
     }
-    const method = parseAppointmentToBeUpdated?.id ? "PUT" : "POST";
-
-    try {
-
-  };
+    const method = parseAppointmentToBeUpdated?.id ? "update" : "create";
+    createOrUpdateAppointment("/api/appointment/create-update", method, formData)
+    console.log(appointmentData, appointmentError, appointmentLoading)
+    }
 
   // berber yada tarih değişince tarih ve saat tablosunu güncelle
   useEffect(() => {

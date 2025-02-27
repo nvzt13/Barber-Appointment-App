@@ -5,11 +5,6 @@ import { Prisma } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-
-  if (!session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
   try {
     const { date, time, barberId } = await req.json();
     console.log("Received data:", {
@@ -30,7 +25,7 @@ export async function POST(req: NextRequest) {
     const existingAppointment = await prisma.appointment.findFirst({
       where: {
         barberId,
-        date: new Date(date),
+        date,
         time,
       },
     });
@@ -71,7 +66,7 @@ export async function POST(req: NextRequest) {
         barber: {
           connect: { id: barberId },
         },
-        date: parsedDate,
+        date,
         time,
         status: "pending",
       },
@@ -151,7 +146,7 @@ export async function DELETE(req: NextRequest ) {
     }
 
     // Eğer admin değilse ve randevu sahibi değilse, işlemi reddet
-    if (!isAdmin && existingAppointment.userId !== session.user.id) {
+    if (!isAdmin && existingAppointment.customerId !== session.user.id) {
       return NextResponse.json({ message: "Not authorized to delete this appointment" }, { status: 403 });
     }
 
