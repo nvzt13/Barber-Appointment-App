@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
+  console.log(session?.user.id+ "--------------------------")
   try {
     const { date, time, barberId } = await req.json();
     console.log("Received data:", {

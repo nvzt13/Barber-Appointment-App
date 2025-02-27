@@ -3,23 +3,22 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const email = searchParams.get("email");
+  const userId = searchParams.get("userId");
 
-  if (!email) {
+  if (!userId) {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
   }
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-      select: { id: true },
+    const isAdmin = await prisma.user.findFirst({
+      where: { id: userId, role: "ADMIN" }
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!isAdmin) {
+      return NextResponse.json(false);
     }
 
-    return NextResponse.json(user);
+    return NextResponse.json(true);
   } catch (error) {
     console.error("Database error:", error);
     return NextResponse.json(
