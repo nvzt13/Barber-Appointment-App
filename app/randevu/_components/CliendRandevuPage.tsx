@@ -32,8 +32,8 @@ const ClientRandevePage: React.FC<ClientRandevePageProps> = ({ barbers }) => {
     ? JSON.parse(decodeURIComponent(appointmentToBeUpdated))
     : null;
   
-    
 
+test
   const [formData, setFormData] = useState<FormDataProps>({
     id: parseAppointmentToBeUpdated?.id || "",
     barberId: parseAppointmentToBeUpdated?.barberId || "",
