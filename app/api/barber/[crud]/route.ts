@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { barberId: string } }
-) {
+export async function GET(request: NextRequest) {
+  const session = await auth()
+
   try {
-    const { barberId } = params;
+    const barbers = await prisma.barber.findMany()
+    const barberId = request.nextUrl.searchParams.get("barberId");
     const date = request.nextUrl.searchParams.get("date");
+    console.log(barberId, date, barbers + "-------------------")
+    if(!session || !session.user.id){
+    return NextResponse.json({ message: "Barbers fetched successfully", barbers }, { status: 200 })
+    }
 
-    if (!date) {
+    if (!date || !barberId) {
       return NextResponse.json(
         { message: "Date parameter is required" },
         { status: 400 }
@@ -20,14 +25,13 @@ export async function GET(
     const existingAppointments = await prisma.appointment.findMany({
       where: {
         barberId: barberId,
-        date: new Date(date),
+        date
       },
       select: {
         time: true,
       },
     });
 
-    // Create array of all possible time slots
     const allTimeSlots = Array.from({ length: 13 }, (_, i) => {
       const hour = i + 9; // Start from 9 AM
       return `${hour}:00 - ${hour + 1}:00`;

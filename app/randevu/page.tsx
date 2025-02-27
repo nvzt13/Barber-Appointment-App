@@ -1,9 +1,10 @@
-import CliendRandevePage from "./CliendRandevePage";
+import { Barber } from "@prisma/client";
+import CliendRandevePage from "./_components/CliendRandevuPage";
 
 const TakeAppointmentPage = async () => {
   const getServerSideProps = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/barber");
+      const res = await fetch("http://localhost:3000/api/barber/read");
       if (res.ok) {
         const data = await res.json();
         return data;
@@ -17,12 +18,11 @@ const TakeAppointmentPage = async () => {
     }
   };
 
-  const data = await getServerSideProps();
-  
-  // Berber verilerini prop olarak geçiyoruz
+  const barberData = await getServerSideProps();
+  const barbers: Barber[] = barberData.barbers
   return (
-    <section className="p-6 bg-gray-900 text-white">
-      <CliendRandevePage barbers={data ? data.barbers : []} />
+    <section className="p-6 bg-gray-900 text-white w-full">
+      <CliendRandevePage barbers={barbers} />
     </section>
   );
 };

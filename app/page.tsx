@@ -1,12 +1,12 @@
-import Footer from "@/components/shared/Footer";
-import Gallery from "@/components/shared/Gallery";
-import Header from "@/components/shared/Header";
-import Services from "@/components/shared/Services";
-import Why from "@/components/shared/Why";
+import Footer from "@/components/layout/Footer";
+import Gallery from "@/components/sections/Gallery";
+import Header from "@/components/sections/Welcome";
+import Services from "@/components/sections/Services";
+import Why from "@/components/sections/Why";
 
 export default function Home() {
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="mx-auto">
       <Header />
       <Why />
       <Services />

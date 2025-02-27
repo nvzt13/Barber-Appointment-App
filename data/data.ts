@@ -1,4 +1,4 @@
-import { galleryData } from 'data/galleryData';
+
 export const cardData = [
     {
         title: "Saç - Sakal",
@@ -44,18 +44,6 @@ export const galleryData = [
     }
 ]
 
-export const seniorBarber = [
-    {
-        name: "Ali",
-        image: "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-    },
-    {
-        name: "Veli",
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLA994hpL3PMmq0scCuWOu0LGsjef49dyXVg&s"
-    },
-    {
-        name: "Hasan",
-        image: "https://neweralive.na/wp-content/uploads/2024/06/lloyd-sikeba.jpg"
-    }
-
+export const allSlots = [
+    "9:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"
 ]
