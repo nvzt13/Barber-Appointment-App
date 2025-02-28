@@ -4,7 +4,7 @@ import CliendRandevePage from "./_components/CliendRandevuPage";
 const TakeAppointmentPage = async () => {
   const getServerSideProps = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/barber/read");
+      const res = await fetch("http://localhost:3000/api/barber/1");
       if (res.ok) {
         const data = await res.json();
         return data;
@@ -19,10 +19,13 @@ const TakeAppointmentPage = async () => {
   };
 
   const barberData = await getServerSideProps();
-  const barbers: Barber[] = barberData.barbers
+  console.log(barberData)
+  // tüm berberleri çek 
+ // <CliendRandevePage barbers={false} />
+  
   return (
     <section className="p-6 bg-gray-900 text-white w-full">
-      <CliendRandevePage barbers={barbers} />
+      randevu page
     </section>
   );
 };
