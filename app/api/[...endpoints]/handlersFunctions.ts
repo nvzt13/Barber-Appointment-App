@@ -2,41 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 
-export async function handleGet(resource: string, id: string | undefined) {
-    switch (resource) {
-      case "barber":
-        if (id) {
-          const barber = await prisma.barber.findFirst({
-            where: { id },
-          });
-          return NextResponse.json(barber);
-        }
-        return NextResponse.json({ message: "Fetching all barbers" });
-      case "user":
-        if (id) {
-          const user = await prisma.user.findFirst({
-            where:{id}
-          })
-          return NextResponse.json(user);
-        }
-        return NextResponse.json({ message: "Fetching all users" });
-      case "appointment":
-        if (id) {
-          const appointment = await prisma.appointment.findFirst({
-            where: {id}
-          })
-          return NextResponse.json(appointment)
-        
-        }
-        return NextResponse.json({ message: "Fetching all appointments" });
-      default:
-        return NextResponse.json(
-          { message: "Resource not found" },
-          { status: 404 }
-        );
-    }
-  }
-  
+
   export async function handlePost(
     resource: string,
     req: NextApiRequest,

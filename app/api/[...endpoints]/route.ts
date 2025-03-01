@@ -1,95 +1,78 @@
-import { Appointment } from "@prisma/client";
+// /api/v1/barber
+// /api/v1/barber/id
+// /api/v1/barber/id?avaible-slots=true&day=01-03-2025
+
+// /api/v1/appointment
+// /api/v1/appointment/id
+
+// /api/v1/user
+// /api/v1/user/id
+
+
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { handleGet } from "./handlersFunctions";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { endpoints: string[] } }
-) {
+export async function GET(req: NextRequest, res: NextResponse, { params }: { params: { endpoints: string[] } }) {
   const session = await auth();
   console.log(session?.user?.id + "-----------------")
 
-  if (!session) {
-    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
-  }
-  const { endpoins } = params;
-
-  if(!endpoints || !Array.isArray(endpoints)) {
-    return NextResponse.json({ message: "Invalid request" }, { status: 400 });
-  }
-
+  const { endpoints } = params;
   const [resource, id] = endpoints;
-  return await handleGet(resource, id);
+
+  return await handleGet(resource, id, req);
 }
 
+export async function handleGet(resource: string, id: string | undefined, req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const availableSlots = searchParams.get('available-slots');
+  const day = searchParams.get('day');
 
+  switch (resource) {
+    case "barber":
+      if (id) {
+        if (availableSlots === 'true' && day) {
+          // Belirtilen id'li berber için, belirtilen günün müsait saatlerini döndür
+          const availableSlots = await prisma.slot.findMany({
+            where: {
+              barberId: id,
+              day: new Date(day),
+              isBooked: false, // Boş olan slotlar
+            }
+          });
+          return NextResponse.json(availableSlots);
+        } else {
+          // Belirtilen id'li berberin bilgilerini döndür
+          const barber = await prisma.barber.findFirst({ where: { id } });
+          return NextResponse.json(barber);
+        }
+      }
+      // Tüm berberleri döndür
+      const barbers = await prisma.barber.findMany();
+      return NextResponse.json(barbers);
 
+    case "user":
+      if (id) {
+        // Belirtilen id'li kullanıcıyı döndür
+        const user = await prisma.user.findFirst({ where: { id } });
+        return NextResponse.json(user);
+      }
+      // Tüm kullanıcıları döndür
+      const users = await prisma.user.findMany();
+      return NextResponse.json(users);
 
+    case "appointment":
+      if (id) {
+        // Belirtilen id'li randevuyu döndür
+        const appointment = await prisma.appointment.findFirst({ where: { id } });
+        return NextResponse.json(appointment);
+      }
+      // Tüm randevuları döndür
+      const appointments = await prisma.appointment.findMany();
+      return NextResponse.json(appointments);
 
-
-
-
-
-
-
-
-
-
-
-
-
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
-  const { endpoints } = await req.query;
-
-  if (!endpoints || !Array.isArray(endpoints)) {
-    return res.status(400).json({ message: "Invalid request" });
+    default:
+      return NextResponse.json({ message: "Resource not found" }, { status: 404 });
   }
-
-  const [resource] = endpoints;
-  await handlePost(resource, req, res);
-}
-
-export async function PUT(req: NextApiRequest, res: NextApiResponse) {
-  const { endpoints } = await req.query;
-
-  if (!endpoints || !Array.isArray(endpoints)) {
-    return res.status(400).json({ message: "Invalid request" });
-  }
-
-  const [resource, id] = endpoints;
-  await handlePut(resource, id, req, res);
-}
-
-export async function DELETE(req: NextApiRequest, res: NextApiResponse) {
-  const { endpoints } = await req.query;
-
-  if (!endpoints || !Array.isArray(endpoints)) {
-    return res.status(400).json({ message: "Invalid request" });
-  }
-
-  const [resource, id] = endpoints;
-  await handleDelete(resource, id, res);
-}
-function handlePost(
-  resource: string,
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  throw new Error("Function not implemented.");
-}
-
-function handlePut(
-  resource: string,
-  id: string,
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  throw new Error("Function not implemented.");
-}
-
-function handleDelete(resource: string, id: string, res: NextApiResponse) {
-  throw new Error("Function not implemented.");
 }

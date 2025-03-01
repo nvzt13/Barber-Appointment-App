@@ -2,7 +2,6 @@ import { Barber } from "@prisma/client";
 import CliendRandevePage from "./_components/CliendRandevuPage";
 
 const TakeAppointmentPage = async () => {
-  const getServerSideProps = async () => {
     try {
       const res = await fetch("http://localhost:3000/api/barber/1");
       if (res.ok) {
@@ -16,10 +15,8 @@ const TakeAppointmentPage = async () => {
       console.log("Sunucu hatası:", error);
       return null;
     }
-  };
 
-  const barberData = await getServerSideProps();
-  console.log(barberData)
+
   // tüm berberleri çek 
  // <CliendRandevePage barbers={false} />
   
