@@ -8,18 +8,21 @@
 // /api/v1/user
 // /api/v1/user/id
 
-
-import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 
-export async function GET(req: NextRequest, res: NextResponse, { params }: { params: { endpoints: string[] } }) {
-  const session = await auth();
-  console.log(session?.user?.id + "-----------------")
 
-  const { endpoints } = params;
-  const [resource, id] = endpoints;
+export async function GET(req: NextRequest, context: { params: { endpoints: string[] } }) {
+  const { params } = context; // context'ten params'ı alıyoruz
+  const { endpoints } = params; // endpoints'i destructure ediyoruz
+  
+  const session = await auth();
+  console.log(session?.user?.id + "-----------------");
+  console.log(endpoints + "_______________");
+
+  // Diğer işlemler...
+  const [resource, id] = endpoints; // Dinamik route ile gelen değerleri alın
 
   return await handleGet(resource, id, req);
 }
@@ -33,7 +36,6 @@ export async function handleGet(resource: string, id: string | undefined, req: N
     case "barber":
       if (id) {
         if (availableSlots === 'true' && day) {
-          // Belirtilen id'li berber için, belirtilen günün müsait saatlerini döndür
           const availableSlots = await prisma.slot.findMany({
             where: {
               barberId: id,
@@ -43,12 +45,10 @@ export async function handleGet(resource: string, id: string | undefined, req: N
           });
           return NextResponse.json(availableSlots);
         } else {
-          // Belirtilen id'li berberin bilgilerini döndür
           const barber = await prisma.barber.findFirst({ where: { id } });
           return NextResponse.json(barber);
         }
       }
-      // Tüm berberleri döndür
       const barbers = await prisma.barber.findMany();
       return NextResponse.json(barbers);
 
@@ -74,5 +74,58 @@ export async function handleGet(resource: string, id: string | undefined, req: N
 
     default:
       return NextResponse.json({ message: "Resource not found" }, { status: 404 });
+  }
+}
+
+
+
+
+export async function POST(req: NextRequest, context: { params: { endpoints: string[] } }) {
+  const { params } = context;
+  const { endpoints } = await params;
+
+
+  console.log(endpoints + "_______________");
+
+  let data;
+  try {
+    data = await req.json(); // Request body'den JSON veriyi alıyoruz
+    console.log(data + "-----------------")
+  } catch (error) {
+    console.error("Invalid JSON:", error);
+    return new Response(JSON.stringify({ error: 'Invalid JSON payload' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (!data || !data.name || !data.image) {
+    return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  try {
+    const createBarber = await prisma.barber.create({
+      data: {
+        id: data.id,
+        name: data.name,  // Gelen veriden berber ismi
+        image: data.image,  // Gelen veriden resim
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt
+      }
+    });
+
+    return new Response(JSON.stringify(createBarber), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error("Barber creation failed:", error instanceof Error ? error.message : error);
+    return new Response(JSON.stringify({ error: 'Failed to create barber' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }

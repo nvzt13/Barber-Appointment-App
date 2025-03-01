@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,10 +9,12 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 enum Role {
   ADMIN
   USER
 }
+
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id")
@@ -55,7 +54,7 @@ model User {
   role          Role           @default(USER)
   accounts      Account[]
   sessions      Session[]
-  appointments  Appointment[] // Add this line
+  appointments  Appointment[]  // Kullanıcı randevuları
 
   @@map("users")
 }
@@ -75,20 +74,37 @@ model Barber {
   image        String
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  appointments Appointment[] // Fix the relationship name and make it plural
+  availableSlots AvailableSlot[]
+  appointments Appointment[] // Berber randevuları
+    @@map("barber")
 }
 
 model Appointment {
-  id         String   @id @default(cuid()) // Benzersiz bir ID
-  customerId String // Randevu alan kullanıcının ID'si
-  barberId   String // Hangi ustaya randevu alındığı (Barber ID)
-  date       String // Randevu tarihi
-  time       String // Randevu saati (örneğin, 09:00 - 10:00)
-  status     String? // Randevu durumu (örneğin, confirmed, pending, cancelled)
-  createdAt  DateTime? @default(now())
-  updatedAt  DateTime? @updatedAt
-  barber     Barber   @relation(fields: [barberId], references: [id]) // Fix the relation
-  customer   User     @relation(fields: [customerId], references: [id]) // Add this line
+  id         String   @id @default(cuid())  // Benzersiz bir ID
+  customerId String   // Randevu alan kullanıcının ID'si
+  barberId   String   // Hangi ustaya randevu alındığı (Barber ID)
+  date       DateTime // Randevu tarihi
+  startTime  DateTime // Randevu başlangıç saati
+  endTime    DateTime // Randevu bitiş saati
+  status     String?  // Randevu durumu (örneğin, confirmed, pending, cancelled)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  barber     Barber   @relation(fields: [barberId], references: [id])  // Berber ile ilişki
+  customer   User     @relation(fields: [customerId], references: [id]) // Kullanıcı ile ilişki
+  slot       AvailableSlot @relation(fields: [slotId], references: [id]) // Slot ile ilişki
+  slotId     String   @unique // Slot ID benzersiz olmalı
 
-  @@map("appointments")
+  @@map("appointment")
+}
+
+model AvailableSlot {
+  id        String   @id @default(cuid())
+  date      DateTime // Slot tarihi
+  startTime DateTime // Slot başlangıç saati
+  endTime   DateTime // Slot bitiş saati
+  isBooked  Boolean  @default(false)
+  barber    Barber   @relation(fields: [barberId], references: [id]) // Berber ile ilişki
+  barberId  String
+  appointment Appointment? // Eğer randevu varsa o saat randevuyla ilişkilendirilir.
+    @@map("vailable-slot")
 }
