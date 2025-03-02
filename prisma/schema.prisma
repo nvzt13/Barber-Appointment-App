@@ -56,7 +56,7 @@ model User {
   sessions      Session[]
   appointments  Appointment[]  // Kullanıcı randevuları
 
-  @@map("users")
+  @@map("user")
 }
 
 model VerificationToken {
@@ -74,37 +74,22 @@ model Barber {
   image        String
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  availableSlots AvailableSlot[]
   appointments Appointment[] // Berber randevuları
     @@map("barber")
 }
 
 model Appointment {
   id         String   @id @default(cuid())  // Benzersiz bir ID
-  customerId String   // Randevu alan kullanıcının ID'si
+  userId String   // Randevu alan kullanıcının ID'si
   barberId   String   // Hangi ustaya randevu alındığı (Barber ID)
   date       DateTime // Randevu tarihi
   startTime  DateTime // Randevu başlangıç saati
   endTime    DateTime // Randevu bitiş saati
-  status     String?  // Randevu durumu (örneğin, confirmed, pending, cancelled)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   barber     Barber   @relation(fields: [barberId], references: [id])  // Berber ile ilişki
-  customer   User     @relation(fields: [customerId], references: [id]) // Kullanıcı ile ilişki
-  slot       AvailableSlot @relation(fields: [slotId], references: [id]) // Slot ile ilişki
-  slotId     String   @unique // Slot ID benzersiz olmalı
+  user   User     @relation(fields: [userId], references: [id]) // Kullanıcı ile ilişki
 
   @@map("appointment")
 }
 
-model AvailableSlot {
-  id        String   @id @default(cuid())
-  date      DateTime // Slot tarihi
-  startTime DateTime // Slot başlangıç saati
-  endTime   DateTime // Slot bitiş saati
-  isBooked  Boolean  @default(false)
-  barber    Barber   @relation(fields: [barberId], references: [id]) // Berber ile ilişki
-  barberId  String
-  appointment Appointment? // Eğer randevu varsa o saat randevuyla ilişkilendirilir.
-    @@map("vailable-slot")
-}
