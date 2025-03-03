@@ -22,7 +22,7 @@ const HourSelection: React.FC<HourSelectionProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-4 gap-4 text-gray-900">
+    <div className="grid grid-cols-4 gap-4 text-gray-900 w-92">
       {allSlots.map((slot) => {
         const isBooked = bookedSlots.includes(slot);
         const isAvailable = availableSlots.includes(slot);
@@ -36,7 +36,7 @@ const HourSelection: React.FC<HourSelectionProps> = ({
               isBooked
                 ? "bg-gray-200 cursor-not-allowed text-red-500"
                 : isAvailable
-                ? "bg-green-100 hover:bg-green-200 cursor-pointer"
+                ? "bg-green-100 hover:bg-blue-300 cursor-pointer"
                 : "bg-white hover:bg-gray-100 cursor-pointer"
             }
             ${isSelected ? "border-2 border-blue-500 bg-blue-400" : "border border-gray-300"}`}

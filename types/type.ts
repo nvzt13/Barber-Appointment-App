@@ -18,4 +18,5 @@ export interface HandleHTTPMethodsProps {
   id?: string;
   request: NextRequest;
   body?: any;
+  session?: any
 }

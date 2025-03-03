@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 
-const SideBar = ({ isAdmin }: { isAdmin: boolean }) => {
+const SideBar = () => {
+  const isAdmin = true
   return (
     <div className="w-64 h-full bg-gray-800 text-gray-100 p-5 shadow-lg">
       <h2 className="border-b border-gray-700 pb-2 mb-4">Kontrol Paneli</h2>
