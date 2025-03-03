@@ -83,10 +83,9 @@ model Appointment {
   userId String   // Randevu alan kullanıcının ID'si
   barberId   String   // Hangi ustaya randevu alındığı (Barber ID)
   date       DateTime // Randevu tarihi
-  startTime  DateTime // Randevu başlangıç saati
-  endTime    DateTime // Randevu bitiş saati
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  time       String
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @default(now()) @updatedAt
   barber     Barber   @relation(fields: [barberId], references: [id])  // Berber ile ilişki
   user   User     @relation(fields: [userId], references: [id]) // Kullanıcı ile ilişki
 

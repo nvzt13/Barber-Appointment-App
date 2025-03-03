@@ -5,7 +5,7 @@
 // /api/v1/appointment      GET-POST
 // /api/v1/appointment/id
 
-// /api/v1/user
+// /api/v1/user             GET
 // /api/v1/user/id
 // /api/v1/user/id/appointments
 
@@ -13,6 +13,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { HTTPMethotsProps, HandleHTTPMethodsProps } from "@/types/type";
+import { Appointment } from "@prisma/client";
 
 export async function POST(request: NextRequest, { params }: HTTPMethotsProps) {
   const { endpoints } = await params;
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest, { params }: HTTPMethotsProps) {
   }
 
   const [resource, id] = endpoints;
-  const body = await request.json();
+  const body = await request.json() ;
   return await handlePost({ resource, id, request, body });
 }
 
@@ -34,7 +35,6 @@ export async function handlePost({
   request,
   body,
 }: HandleHTTPMethodsProps) {
-
   switch (resource) {
     case "barber":
       if (id) {
@@ -44,7 +44,7 @@ export async function handlePost({
         );
       }
       // Create new barber
-      console.log(body + "___________________-")
+      console.log(body + "___________________-");
       if (!body.id || !body.name || !body.image || !body.createdAt) {
         return NextResponse.json(
           { message: "Missing required fields for appointment" },
@@ -63,41 +63,27 @@ export async function handlePost({
         );
       }
 
-      case "appointment":
-        try {
-          if (!body.barberId || !body.userId || !body.date ) {
-            return NextResponse.json(
-              { message: "Missing required fields for appointment" },
-              { status: 400 }
-            );
-          }
-      
-          const newAppointment = await prisma.appointment.create({
-            data: body,
-          });
-          return NextResponse.json(newAppointment);
-        } catch (error) {
-          console.error("Appointment creation error:", error);
+    case "appointment":
+      console.log(body.barberId, body.userId, body.date, body.time +  "-------------------")
+      try {
+        if (!body.barberId || !body.userId || !body.date || !body.time) {
           return NextResponse.json(
-            { message: "Failed to create appointment", error: error.message },
-            { status: 500 }
+            { message: "Missing required fields for appointment" },
+            { status: 400 }
           );
         }
-      
-    case "user":
-      if (id) {
-        // Belirtilen id'li kullanıcıyı döndür
-        const user = await prisma.user.findFirst({ where: { id } });
-        return NextResponse.json(user);
+
+        const newAppointment = await prisma.appointment.create({
+          data:body
+        });
+        return NextResponse.json(newAppointment);
+      } catch (error) {
+        console.error("Appointment creation error:", error);
+        return NextResponse.json(
+          { message: "Failed to create appointment", error: error.message },
+          { status: 500 }
+        );
       }
-      // Tüm kullanıcıları döndür
-      const users = await prisma.user.findMany();
-      return NextResponse.json(users);
-    default:
-      return NextResponse.json(
-        { message: "Resource not found" },
-        { status: 404 }
-      );
   }
 }
 

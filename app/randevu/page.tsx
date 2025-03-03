@@ -2,28 +2,29 @@ import { Appointment, Barber } from "@prisma/client";
 import { headers } from "next/headers";
 
 const TakeAppointmentPage = async () => {
+  const createAppointment: Appointment = {
+    id: "dsfg",
+    barberId: "1",
+    userId: "cm7rrcfug0000693uq02wad4u",
+    date: new Date("2025-02-03"),
+    time: "String",
+    createdAt: undefined,
+    updatedAt: undefined
+  };
 
-
-    const createAppointment: Appointment = {
-      id: "14gdvgjee4ujfdvhje",
-      userId: "cengiz",
-      barberId: "yok",
-      date: new Date("2025-03-01T00:00:00Z"),
-      startTime: new Date("2025-03-01T00:00:00Z"),
-      endTime: new Date("2025-03-01T00:00:00Z"),
-      createdAt: new Date("2025-03-01T00:00:00Z"),
-      updatedAt: new Date("2025-03-01T00:00:00Z"),
-    };
-    try {
-      const res = await fetch("http://localhost:3000/api/v1/appointment", {
-        method: "POST",
-        headers: await headers(),
-        body: JSON.stringify(createAppointment),
-      });
+  try {
+    const res = await fetch("http://localhost:3000/api/v1/appointment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...Object.fromEntries(await headers()),
+      },
+      body: JSON.stringify(createAppointment),
+    });
 
     if (res.ok) {
-      const data = await res.json(); // JSON verisini burada alıyorsunuz
-      console.log(data); // Veriyi console'a basıyoruz
+      const data = await res.json();
+      console.log(data);
     } else {
       console.log("Hata durumu:", res);
     }
@@ -39,58 +40,3 @@ const TakeAppointmentPage = async () => {
 };
 
 export default TakeAppointmentPage;
-
-/*
-    const createAppointment: Appointment = {
-      id: "14gdvgjee4ujfdvhje",
-      userId: "cengiz",
-      barberId: "yok",
-      date: new Date("2025-03-01T00:00:00Z"),
-      startTime: new Date("2025-03-01T00:00:00Z"),
-      endTime: new Date("2025-03-01T00:00:00Z"),
-      createdAt: new Date("2025-03-01T00:00:00Z"),
-      updatedAt: new Date("2025-03-01T00:00:00Z"),
-    };
-    try {
-      const res = await fetch("http://localhost:3000/api/v1/appointment", {
-        method: "POST",
-        headers: await headers(),
-        body: JSON.stringify(createAppointment),
-      });
-
-    if (res.ok) {
-      const data = await res.json(); // JSON verisini burada alıyorsunuz
-      console.log(data); // Veriyi console'a basıyoruz
-    } else {
-      console.log("Hata durumu:", res.status);
-    }
-  } catch (error) {
-    co
-
-
-
-      const createBarber: Barber = {
-    id: "dfhdfgjj2",
-    name: "mert",
-    image: "null",
-    createdAt: new Date("2025-03-01T00:00:00Z"),
-    updatedAt: new Date("2025-03-01T00:00:00Z"),
-  };
-
-  try {
-    const res = await fetch("http://localhost:3000/api/v1/barber", {
-      method: "POST",
-      headers: await headers(),
-      body: JSON.stringify(createBarber),
-    });
-
-    if (res.ok) {
-      const data = await res.json(); // JSON verisini burada alıyorsunuz
-      console.log(data); // Veriyi console'a basıyoruz
-    } else {
-      console.log("Hata durumu:", res.status);
-    }
-  } catch (error) {
-    console.log("Sunucu hatası:", error);
-  }
-*/
