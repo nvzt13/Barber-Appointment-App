@@ -9,10 +9,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader2Icon } from "lucide-react";
 import { allSlots } from "@/data/data";
-interface ClientRandevePageProps {
+interface ClientRandevuPageProps {
   barbers: Barber[];
 }
-const IndexRandevu: React.FC<ClientRandevePageProps> = ({ barbers }) => {
+const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -48,17 +48,20 @@ const IndexRandevu: React.FC<ClientRandevePageProps> = ({ barbers }) => {
     }
     const method = parseAppointmentToBeUpdated?.id ? "PUT" : "POST";
     try {
+      setLoading(true)
       const response = await fetch("/api/v1/appointment", {
         method,
         body: JSON.stringify(formData),
       });
       if (response.ok) {
+      setLoading(false)
         alert(
           method === "PUT"
             ? "Randevunuz başarıyla güncellendi!"
             : "Randevunuz başarıyla oluşturuldu!"
         );
       } else {
+      setLoading(false)
         alert(
           method === "PUT"
             ? "Randevunuz güncellenirken bir hata oluştu!"
@@ -67,6 +70,7 @@ const IndexRandevu: React.FC<ClientRandevePageProps> = ({ barbers }) => {
         console.log(await response.json() + "-------------------")
       }
     } catch (error) {
+      setLoading(false)
       console.log(error);
     }
   };
@@ -105,12 +109,13 @@ const IndexRandevu: React.FC<ClientRandevePageProps> = ({ barbers }) => {
           />
         </div>
         <div className="text-center">
+        
           <button
             type="submit"
             className="px-6 py-3 bg-blue-600 hover:bg-gray-700 rounded-lg text-white font-semibold"
           >
-            {parseAppointmentToBeUpdated?.id
-              ? "Randevuyu Güncelle"
+            {loading
+              ? <span><Loader2Icon className="animate-spin " /></span>
               : "Randevuyu Onayla"}
           </button>
         </div>

@@ -1,3 +1,4 @@
+import { Session } from "@prisma/client";
 import { NextRequest } from "next/server";
 
 export interface FormDataProps {
@@ -14,9 +15,7 @@ export interface HTTPMethotsProps {
 }
 
 export interface HandleHTTPMethodsProps {
-  resource: string;
-  id?: string;
+  endpoints: string[];
   request: NextRequest;
-  body?: any;
   session?: any
 }

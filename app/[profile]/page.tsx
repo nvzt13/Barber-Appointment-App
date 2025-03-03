@@ -1,35 +1,48 @@
 import { auth } from '@/auth'
 import { headers } from 'next/headers';
 import React from 'react'
+import IndexProfile from './_components/IndexProfile';
+import { Appointment } from '@prisma/client';
 
 const ProfilePage = async () => {
-    const session = await auth();
-    if(!session || !session.user.id) {
-      return (
-        <div>
-          Unauthorized
-        </div>
-      )
-    }
-    try {
-      const res = await fetch(`http://localhost/api/v1/user/${session?.user?.id}/appointmet`, {
-        method: "GET",
-        headers: await headers()
-      })
-      if(res.ok) {
-        console.log("Randevular getirildi!")
-      }else {
-        console.log("Randevular getirilirken bir hata oluştu!")
-        console.log(res)
-      }
-    } catch (error) {
-      console.log(error)      
+  let fetchedUserAppointment: Appointment[] = [];
+  const session = await auth();
+  
+  if (!session || !session.user.id) {
+    return (
+      <div>
+        Unauthorized
+      </div>
+    );
   }
+
+  try {
+    const res = await fetch(`http://localhost:3000/api/v1/user/${session?.user.id}/appointment`, {
+      method: "GET",
+      headers: await headers(),
+    });
+
+    if (res.ok) {
+      console.log("Randevular getirildi!");
+      fetchedUserAppointment = await res.json();
+    } else {
+      console.log("Randevular getirilirken bir hata oluştu!");
+      console.log(res.status);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  // Veriyi kontrol etmeden bileşen render etmiyoruz
+  if (!fetchedUserAppointment.length) {
+    return <p>Randevular yükleniyor...</p>; // Veriler gelene kadar loading mesajı
+  }
+
   return (
     <div>
-      profileadsf
+      <IndexProfile appointments={fetchedUserAppointment} />
     </div>
-  )
-}
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;

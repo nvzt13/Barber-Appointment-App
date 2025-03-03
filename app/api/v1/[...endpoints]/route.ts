@@ -17,25 +17,23 @@ import { HTTPMethotsProps, HandleHTTPMethodsProps } from "@/types/type";
 
 export async function GET({ request }, { params }: HTTPMethotsProps) {
   const { endpoints } = await params;
-
+  console.log(endpoints + "________-------------------------___________")  
   const session = await auth();
 
   if (!session || !session?.user?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  console.log(endpoints + "___________________________")  
-  const [resource, id] = endpoints;
-
-  return await handleGet({ resource, id, request });
+  return await handleGet({ endpoints, request, session });
 }
 
 export async function handleGet({
-  resource,
-  id,
+  endpoints,
   request,
 }: HandleHTTPMethodsProps) {
-  switch (resource) {
+  const id = endpoints[1];
+
+  switch (endpoints[0]) {
     case "barber":
       if (id) {
         const barber = await prisma.barber.findFirst({ where: { id } });
@@ -46,10 +44,14 @@ export async function handleGet({
       return NextResponse.json(barbers);
 
     case "user":
-      if (id) {
-        // Belirtilen id'li kullanıcıyı döndür
-        const user = await prisma.user.findFirst({ where: { id } });
+      const isWantedAppointment = endpoints[2]
+      if (id && !isWantedAppointment) {
+        const user = await prisma.user.findMany({ where: { id } });
         return NextResponse.json(user);
+      }
+      if(isWantedAppointment){
+        const userAppointment = await prisma.appointment.findMany({where: {userId: id}})
+        return NextResponse.json({message: "User appointment fetch succesfully!", data: userAppointment})
       }
       // Tüm kullanıcıları döndür
       const users = await prisma.user.findMany();
@@ -93,21 +95,19 @@ export async function POST(request: NextRequest, { params }: HTTPMethotsProps) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const [resource, id] = endpoints;
-  const body = await request.json() ;
-  return await handlePost({ resource, id, request, body, session });
+  return await handlePost({ endpoints, request, session });
 }
 
 // ------------------- handlePost ----------------
 
 export async function handlePost({
-  resource,
-  id,
+  endpoints,
   request,
-  body,
   session
 }: HandleHTTPMethodsProps) {
-  switch (resource) {
+
+  const body = await request.json()
+  switch (endpoints[0]) {
     case "barber":
       if (id) {
         return NextResponse.json(
