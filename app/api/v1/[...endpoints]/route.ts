@@ -15,9 +15,91 @@ import { auth } from "@/auth";
 import { HTTPMethotsProps, HandleHTTPMethodsProps } from "@/types/type";
 
 
+export async function PUT({ request }, { params }: HTTPMethotsProps) {
+  const session = await auth()
+  const { endpoints } = await params;
+  if (!session || !session?.user?.id) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  return await handlePut({ endpoints, request, session });
+}
+export async function handlePut({
+  endpoints,
+  request,
+}: HandleHTTPMethodsProps) {
+  const id = endpoints[1];
+  const body = await request.json()
+  switch (endpoints[0]) {
+    case "appointment":
+
+      if (id) {
+        const willBeUpdatedAppoimtment = await prisma.appointment.update({where:{
+        id,
+        data:body
+      }})
+        return NextResponse.json(willBeUpdatedAppoimtment);
+      }
+      const appointments = await prisma.appointment.findMany();
+      return NextResponse.json(appointments);
+
+    default:
+      return NextResponse.json(
+        { message: "Resource not found" },
+        { status: 404 }
+      );
+  }
+}
+
+
+
+export async function DELETE({ request }, { params }: HTTPMethotsProps) {
+  const { endpoints } = await params;
+  const session = await auth()
+  if (!session || !session?.user?.id) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  return await handleDelete({ endpoints, request, session });
+}
+
+export async function handleDelete({
+  endpoints,
+  request,
+}: HandleHTTPMethodsProps) {
+  const id = endpoints[1];
+
+  switch (endpoints[0]) {
+    case "barber":
+      if (id) {
+        const barber = await prisma.barber.findFirst({ where: { id } });
+        return NextResponse.json(barber);
+      }
+
+      const barbers = await prisma.barber.findMany();
+      return NextResponse.json(barbers);
+      
+    case "appointment":
+      if (id) {
+        const appointment = await prisma.appointment.delete({
+          where: { id },
+        });
+        return NextResponse.json(appointment);
+      }
+      // Tüm randevuları döndür
+      const appointments = await prisma.appointment.findMany();
+      return NextResponse.json(appointments);
+
+    default:
+      return NextResponse.json(
+        { message: "Resource not found" },
+        { status: 404 }
+      );
+  }
+}
+
 export async function GET({ request }, { params }: HTTPMethotsProps) {
   const { endpoints } = await params;
-  console.log(endpoints + "________-------------------------___________")  
   const session = await auth();
 
   if (!session || !session?.user?.id) {
@@ -76,17 +158,6 @@ export async function handleGet({
       );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 export async function POST(request: NextRequest, { params }: HTTPMethotsProps) {
   const { endpoints } = await params;

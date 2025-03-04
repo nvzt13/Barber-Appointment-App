@@ -27,6 +27,7 @@ const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
     : null;
 
   const [formData, setFormData] = useState({
+      id: parseAppointmentToBeUpdated || "",
       userId: parseAppointmentToBeUpdated?.userId || session?.user?.id || "",
       barberId: parseAppointmentToBeUpdated?.barberId || "",
       date: parseAppointmentToBeUpdated?.date
@@ -47,9 +48,10 @@ const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
       return;
     }
     const method = parseAppointmentToBeUpdated?.id ? "PUT" : "POST";
+    console.log(method)
     try {
       setLoading(true)
-      const response = await fetch("/api/v1/appointment", {
+      const response = await fetch(`/api/v1/appointment/${formData.id}`, {
         method,
         body: JSON.stringify(formData),
       });
@@ -112,11 +114,13 @@ const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
         
           <button
             type="submit"
-            className="px-6 py-3 bg-blue-600 hover:bg-gray-700 rounded-lg text-white font-semibold"
+            className="flex items-center justify-center px-6 py-3 bg-blue-600
+            hover:bg-gray-700 rounded-lg text-white font-semibold text-center
+            mx-auto"
           >
-            {loading
-              ? <span><Loader2Icon className="animate-spin " /></span>
-              : "Randevuyu Onayla"}
+            <p>Randevuyu Onayla</p> {
+              loading ? <span><Loader2Icon className="animate-spin mx-4" /></span>: ""
+            }
           </button>
         </div>
       </form>
@@ -126,25 +130,3 @@ const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
 
 export default IndexRandevu;
 
-/*
-     <div className="flex flex-row items-center justify-evenly w-full">
-        <DateSelection
-          formData={{ ...formData }}
-          setFormData={setFormData}
-          willBeUpdatedDay={formData.date}
-        />
-        <div className="flex justify-center items-center">
-          {loading ? (
-            <Loader2Icon className="flex text-center animate-spin" />
-          ) : (
-            <HourSelection
-              allSlots={allSlots}
-              bookedSlots={bookedSlots}
-              availableSlots={availableSlots}
-              formData={{ ...formData }}
-              setFormData={setFormData}
-            />
-          )}
-        </div>
-       </div>
-  */

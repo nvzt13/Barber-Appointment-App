@@ -13,36 +13,40 @@ interface UserProfilProps {
 const IndexProfile: React.FC<UserProfilProps> = ({ appointments = [] }) => {
   console.log(appointments)
   const router = useRouter();
-  const [willDeletedAppointmentId, setWillDeletedAppointmentId] = useState<string>("");
-  const [deleteMessage, setDeleteMessage] = useState<string | null>(null);
-
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleDelete = (appointmentId: string) => {
-    setWillDeletedAppointmentId(appointmentId);
+    const deleteAppointment = async () => {
+      try{
+        setLoading(true)
+      const res = await fetch(`/api/v1/appointment/${appointmentId}`, {
+        method: "DELETE"
+      })
+      if(res.ok){
+        alert("Appointment deleted successfully")
+        setLoading(false)
+      }else {
+        alert("An error accour when deleted appointment!")
+        setLoading(false)
+      }
+    }catch(error){
+      console.log(error)
+      setLoading(false)
+    }
+    }
+    deleteAppointment()
   };
 
   const handleUpdate = (appointment: Appointment) => {
     const encodedAppointment = encodeURIComponent(JSON.stringify(appointment));
-    router.push(`/form-data?appointmentToBeUpdated=${encodedAppointment}`);
+    router.push(`/randevu?appointmentToBeUpdated=${encodedAppointment}`);
   };
-
-  useEffect(() => {
-    if (appointments) {
-      sessionStorage.setItem("userAppointments", JSON.stringify(appointments));
-    }
-  }, [appointments]);
 
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">
         Randevularım
       </h1>
-
-      {deleteMessage && (
-        <p className="mb-4 text-green-600 dark:text-green-400">
-          {deleteMessage}
-        </p>
-      )}
 
       {appointments && appointments.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -64,17 +68,16 @@ const IndexProfile: React.FC<UserProfilProps> = ({ appointments = [] }) => {
                 Usta: {appointment.barberId}
               </p>
               <div className="absolute bottom-2 right-2 flex space-x-5">
-                <button
-                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-500 transition-colors"
-                  onClick={() => handleUpdate(appointment)}
-                >
-                  <Edit2Icon size={20} />
-                </button>
-                <button
-                  className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-500 transition-colors"
-                  onClick={() => handleDelete(appointment.id)}
-                >
-                </button>
+              
+                  <Edit2Icon onClick={() => handleUpdate(appointment)} size={20} />
+                  <Trash2Icon onClick={()=>
+                  handleDelete(appointment.id)}size={20} /> { 
+                  loading ? 
+                  <span>
+                  <Loader2Icon className="animate-spin" />
+                  </span> : ""
+                  }
+              
               </div>
             </div>
           ))}

@@ -33,14 +33,10 @@ const ProfilePage = async () => {
     console.log(error);
   }
 
-  // Veriyi kontrol etmeden bileşen render etmiyoruz
-  if (!fetchedUserAppointment.length) {
-    return <p>Randevular yükleniyor...</p>; // Veriler gelene kadar loading mesajı
-  }
 
   return (
     <div>
-      <IndexProfile appointments={fetchedUserAppointment} />
+      <IndexProfile appointments={fetchedUserAppointment.data} />
     </div>
   );
 };
