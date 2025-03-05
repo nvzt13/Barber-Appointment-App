@@ -27,7 +27,6 @@ const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
     : null;
 
   const [formData, setFormData] = useState({
-      id: parseAppointmentToBeUpdated || "",
       userId: parseAppointmentToBeUpdated?.userId || session?.user?.id || "",
       barberId: parseAppointmentToBeUpdated?.barberId || "",
       date: parseAppointmentToBeUpdated?.date

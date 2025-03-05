@@ -24,7 +24,8 @@ const ProfilePage = async () => {
 
     if (res.ok) {
       console.log("Randevular getirildi!");
-      fetchedUserAppointment = await res.json();
+      const response = await res.json();
+      fetchedUserAppointment = response.data
     } else {
       console.log("Randevular getirilirken bir hata oluştu!");
       console.log(res.status);
@@ -36,7 +37,7 @@ const ProfilePage = async () => {
 
   return (
     <div>
-      <IndexProfile appointments={fetchedUserAppointment.data} />
+      <IndexProfile appointments={fetchedUserAppointment} />
     </div>
   );
 };

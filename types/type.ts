@@ -9,6 +9,7 @@ export interface FormDataProps {
 }
 
 export interface HTTPMethotsProps {
+  request: NextRequest;
   params: {
     endpoints: string[];
   };

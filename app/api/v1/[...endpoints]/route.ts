@@ -15,7 +15,7 @@ import { auth } from "@/auth";
 import { HTTPMethotsProps, HandleHTTPMethodsProps } from "@/types/type";
 
 
-export async function PUT({ request }, { params }: HTTPMethotsProps) {
+export async function PUT( request , { params }) {
   const session = await auth()
   const { endpoints } = await params;
   if (!session || !session?.user?.id) {
@@ -29,19 +29,25 @@ export async function handlePut({
   request,
 }: HandleHTTPMethodsProps) {
   const id = endpoints[1];
-  const body = await request.json()
-  switch (endpoints[0]) {
-    case "appointment":
+  const body = await request.json();
+console.log(body);
 
+switch (endpoints[0]) {
+  case "appointment":
+    try {
       if (id) {
-        const willBeUpdatedAppoimtment = await prisma.appointment.update({where:{
-        id,
-        data:body
-      }})
-        return NextResponse.json(willBeUpdatedAppoimtment);
+        const willBeUpdatedAppointment = await prisma.appointment.update({
+          where: { id },  // id ile güncellenecek kaydı buluyoruz
+          data: {
+            ...body,  // Güncellenecek verileri body'den alıyoruz
+          },
+        });
+        return NextResponse.json(willBeUpdatedAppointment);
       }
-      const appointments = await prisma.appointment.findMany();
-      return NextResponse.json(appointments);
+    } catch (error) {
+      console.log(error);
+    }
+    break;
 
     default:
       return NextResponse.json(
@@ -176,7 +182,7 @@ export async function handlePost({
   request,
   session
 }: HandleHTTPMethodsProps) {
-
+  const id = endpoints[1]
   const body = await request.json()
   switch (endpoints[0]) {
     case "barber":
