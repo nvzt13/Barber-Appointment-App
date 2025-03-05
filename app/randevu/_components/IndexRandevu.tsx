@@ -8,7 +8,6 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader2Icon } from "lucide-react";
-import { allSlots } from "@/data/data";
 interface ClientRandevuPageProps {
   barbers: Barber[];
 }
@@ -27,6 +26,7 @@ const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
     : null;
 
   const [formData, setFormData] = useState({
+    id: parseAppointmentToBeUpdated?.id || "",
       userId: parseAppointmentToBeUpdated?.userId || session?.user?.id || "",
       barberId: parseAppointmentToBeUpdated?.barberId || "",
       date: parseAppointmentToBeUpdated?.date
@@ -76,10 +76,6 @@ const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
     }
   };
 
-  const availableSlots = allSlots.filter(
-    (slot) => !bookedSlots?.includes(slot)
-  );
-
   return (
     <section className="p-6 bg-gray-900 text-white w-full">
       <form onSubmit={handleSubmit} className="mx-auto flex flex-col">
@@ -102,9 +98,6 @@ const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
             willBeUpdatedDay={formData.date}
           />
           <HourSelection
-            allSlots={allSlots}
-            bookedSlots={bookedSlots}
-            availableSlots={availableSlots}
             formData={{ ...formData }}
             setFormData={setFormData}
           />

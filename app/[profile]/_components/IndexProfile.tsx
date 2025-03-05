@@ -2,7 +2,7 @@
 
 import { Appointment } from "@prisma/client";
 import { Edit2Icon, Loader2Icon, Trash2Icon } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 

@@ -1,8 +1,5 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 
 const SideBar = () => {
@@ -25,7 +22,7 @@ const SideBar = () => {
               </Link>
             </li>
             <li className="my-4">
-              <Link href="/admin/settings" className="text-gray-100 no-underline">
+              <Link href="/api/auth/signout" className="text-gray-100 no-underline">
               <Button variant="destructive" size="sm">
               Çıkış Yap
               </Button>
@@ -46,7 +43,7 @@ const SideBar = () => {
               </Link>
             </li>
             <li className="my-4">
-              <Link href="/user/settings" className="text-gray-100 no-underline">
+              <Link href="/api/auth/signout" className="text-gray-100 no-underline">
               <Button variant="destructive" size="sm">
               Çıkış Yap
               </Button>

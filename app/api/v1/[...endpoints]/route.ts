@@ -31,11 +31,12 @@ export async function handlePut({
   const id = endpoints[1];
   const body = await request.json();
 console.log(body);
-
 switch (endpoints[0]) {
   case "appointment":
+    if(!id || !body.userId || !body.barberId || !body.date || !body.time){
+      return NextResponse.json({message:"Bad request!"}, {status:400})
+    }
     try {
-      if (id) {
         const willBeUpdatedAppointment = await prisma.appointment.update({
           where: { id },  // id ile güncellenecek kaydı buluyoruz
           data: {
@@ -43,7 +44,6 @@ switch (endpoints[0]) {
           },
         });
         return NextResponse.json(willBeUpdatedAppointment);
-      }
     } catch (error) {
       console.log(error);
     }
@@ -119,17 +119,27 @@ export async function handleGet({
   endpoints,
   request,
 }: HandleHTTPMethodsProps) {
-  const id = endpoints[1];
-
-  switch (endpoints[0]) {
+console.log(endpoints + "????????????????")
+  const [table, id, date] = endpoints;
+  switch (table) {
     case "barber":
-      if (id) {
-        const barber = await prisma.barber.findFirst({ where: { id } });
-        return NextResponse.json(barber);
-      }
+      if (id && date) {
+    const appointments = await prisma.appointment.findMany({
+      where: {
+        barberId: id,
+        date: new Date(date), // Girilen tarihi Date formatına çeviriyoruz.
+      },
+      select: {
+        time: true, // Sadece randevu saatlerini almak için
+      },
+    });
 
+    // Alınan randevu saatlerini dön
+    return NextResponse.json(appointments.map(appointment => appointment.time));
+  } 
       const barbers = await prisma.barber.findMany();
       return NextResponse.json(barbers);
+break
 
     case "user":
       const isWantedAppointment = endpoints[2]
