@@ -6,7 +6,7 @@ import Why from "@/components/sections/Why";
 
 export default async function Home() {
   return (
-    <div className="mx-auto">
+    <div className="mx-auto max-w-7xl gap-4 flex flex-col py-8">
       <Header />
       <Why />
       <Services />

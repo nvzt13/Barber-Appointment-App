@@ -79,10 +79,11 @@ model Barber {
 }
 
 model Appointment {
-  id         String   @id @default(cuid())  // Benzersiz bir ID
-  userId String   // Randevu alan kullanıcının ID'si
-  barberId   String   // Hangi ustaya randevu alındığı (Barber ID)
-  date       DateTime // Randevu tarihi
+  id         String   @id @default(cuid())  
+  userId String  
+  barberId   String   
+  userName   String?
+  date       DateTime 
   time       String
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @default(now()) @updatedAt

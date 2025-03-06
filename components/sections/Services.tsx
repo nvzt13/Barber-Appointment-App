@@ -12,7 +12,6 @@ const Services = () => {
           {cardData.map((card, index) => (
             <div
               key={index}
-              className="hover:shadow-2xl transform hover:scale-105 transition-all duration-300 ease-in-out max-w-72"
             >
               <div className="w-full h-[200px] relative">
                 <Image
@@ -20,6 +19,7 @@ const Services = () => {
                   alt="card"
                   width={500}
                   height={500}
+                  className="h-44 object-cover"
                 />
               </div>
 

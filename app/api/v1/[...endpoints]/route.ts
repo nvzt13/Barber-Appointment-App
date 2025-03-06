@@ -14,96 +14,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { HTTPMethotsProps, HandleHTTPMethodsProps } from "@/types/type";
 
-
-export async function PUT( request , { params }) {
-  const session = await auth()
-  const { endpoints } = await params;
-  if (!session || !session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  return await handlePut({ endpoints, request, session });
-}
-export async function handlePut({
-  endpoints,
-  request,
-}: HandleHTTPMethodsProps) {
-  const id = endpoints[1];
-  const body = await request.json();
-console.log(body);
-switch (endpoints[0]) {
-  case "appointment":
-    if(!id || !body.userId || !body.barberId || !body.date || !body.time){
-      return NextResponse.json({message:"Bad request!"}, {status:400})
-    }
-    try {
-        const willBeUpdatedAppointment = await prisma.appointment.update({
-          where: { id },  // id ile güncellenecek kaydı buluyoruz
-          data: {
-            ...body,  // Güncellenecek verileri body'den alıyoruz
-          },
-        });
-        return NextResponse.json(willBeUpdatedAppointment);
-    } catch (error) {
-      console.log(error);
-    }
-    break;
-
-    default:
-      return NextResponse.json(
-        { message: "Resource not found" },
-        { status: 404 }
-      );
-  }
-}
-
-
-
-export async function DELETE({ request }, { params }: HTTPMethotsProps) {
-  const { endpoints } = await params;
-  const session = await auth()
-  if (!session || !session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  return await handleDelete({ endpoints, request, session });
-}
-
-export async function handleDelete({
-  endpoints,
-  request,
-}: HandleHTTPMethodsProps) {
-  const id = endpoints[1];
-
-  switch (endpoints[0]) {
-    case "barber":
-      if (id) {
-        const barber = await prisma.barber.findFirst({ where: { id } });
-        return NextResponse.json(barber);
-      }
-
-      const barbers = await prisma.barber.findMany();
-      return NextResponse.json(barbers);
-      
-    case "appointment":
-      if (id) {
-        const appointment = await prisma.appointment.delete({
-          where: { id },
-        });
-        return NextResponse.json(appointment);
-      }
-      // Tüm randevuları döndür
-      const appointments = await prisma.appointment.findMany();
-      return NextResponse.json(appointments);
-
-    default:
-      return NextResponse.json(
-        { message: "Resource not found" },
-        { status: 404 }
-      );
-  }
-}
-
+// GET
 export async function GET({ request }, { params }: HTTPMethotsProps) {
   const { endpoints } = await params;
   const session = await auth();
@@ -114,12 +25,42 @@ export async function GET({ request }, { params }: HTTPMethotsProps) {
 
   return await handleGet({ endpoints, request, session });
 }
+// POST
+export async function POST(request: NextRequest, { params }: HTTPMethotsProps) {
+  const { endpoints } = await params;
+  const session = await auth();
+  if (!session || !session?.user?.id) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+  return await handlePost({ endpoints, request, session });
+}
+// DELETE
+export async function DELETE({ request }, { params }: HTTPMethotsProps) {
+  const { endpoints } = await params;
+  const session = await auth()
+  if (!session || !session?.user?.id) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
+  return await handleDelete({ endpoints, request, session });
+}
+// PUT
+export async function PUT( request , { params }) {
+  const session = await auth()
+  const { endpoints } = await params;
+  if (!session || !session?.user?.id) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  return await handlePut({ endpoints, request, session });
+}
+
+
+// handleGet
 export async function handleGet({
   endpoints,
   request,
 }: HandleHTTPMethodsProps) {
-console.log(endpoints + "????????????????")
   const [table, id, date] = endpoints;
   switch (table) {
     case "barber":
@@ -127,14 +68,13 @@ console.log(endpoints + "????????????????")
     const appointments = await prisma.appointment.findMany({
       where: {
         barberId: id,
-        date: new Date(date), // Girilen tarihi Date formatına çeviriyoruz.
+        date: new Date(date),
       },
       select: {
-        time: true, // Sadece randevu saatlerini almak için
+        time: true,
       },
     });
 
-    // Alınan randevu saatlerini dön
     return NextResponse.json(appointments.map(appointment => appointment.time));
   } 
       const barbers = await prisma.barber.findMany();
@@ -174,26 +114,16 @@ break
       );
   }
 }
-
-export async function POST(request: NextRequest, { params }: HTTPMethotsProps) {
-  const { endpoints } = await params;
-  const session = await auth();
-  if (!session || !session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  return await handlePost({ endpoints, request, session });
-}
-
-// ------------------- handlePost ----------------
-
+// handlePost
 export async function handlePost({
   endpoints,
   request,
   session
 }: HandleHTTPMethodsProps) {
+  
   const id = endpoints[1]
   const body = await request.json()
+  console.log(body.id, body.date, body.time, body.userId, body.barberId + "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
   switch (endpoints[0]) {
     case "barber":
       if (id) {
@@ -222,6 +152,7 @@ export async function handlePost({
       }
 
     case "appointment":
+      console.log(session?.user?.name + "44444444444444444444444444444444444")
       try {
         if ( !body.barberId || !body.date || !body.time) {
           return NextResponse.json(
@@ -233,6 +164,7 @@ export async function handlePost({
           data:{
             userId: body.userId,
             barberId: body.barberId,
+            userName: "nevzat",
             date: body.date,
             time: body.time
           }
@@ -247,8 +179,71 @@ export async function handlePost({
       }
   }
 }
+// handleDelete
+export async function handleDelete({
+  endpoints,
+  request,
+}: HandleHTTPMethodsProps) {
+  const id = endpoints[1];
 
-// -------------------------------------------------------------
-// ----------------------------- GET ---------------------------
-// -------------------------------------------------------------
+  switch (endpoints[0]) {
+    case "barber":
+      if (id) {
+        const barber = await prisma.barber.findFirst({ where: { id } });
+        return NextResponse.json(barber);
+      }
 
+      const barbers = await prisma.barber.findMany();
+      return NextResponse.json(barbers);
+      
+    case "appointment":
+      if (id) {
+        const appointment = await prisma.appointment.delete({
+          where: { id },
+        });
+        return NextResponse.json(appointment);
+      }
+      // Tüm randevuları döndür
+      const appointments = await prisma.appointment.findMany();
+      return NextResponse.json(appointments);
+
+    default:
+      return NextResponse.json(
+        { message: "Resource not found" },
+        { status: 404 }
+      );
+  }
+}
+// handlePUt
+export async function handlePut({
+  endpoints,
+  request,
+}: HandleHTTPMethodsProps) {
+  const id = endpoints[1];
+  const body = await request.json();
+console.log(body);
+switch (endpoints[0]) {
+  case "appointment":
+    if(!id || !body.userId || !body.barberId || !body.date || !body.time){
+      return NextResponse.json({message:"Bad request!"}, {status:400})
+    }
+    try {
+        const willBeUpdatedAppointment = await prisma.appointment.update({
+          where: { id },  // id ile güncellenecek kaydı buluyoruz
+          data: {
+            ...body,  // Güncellenecek verileri body'den alıyoruz
+          },
+        });
+        return NextResponse.json(willBeUpdatedAppointment);
+    } catch (error) {
+      console.log(error);
+    }
+    break;
+
+    default:
+      return NextResponse.json(
+        { message: "Resource not found" },
+        { status: 404 }
+      );
+  }
+}

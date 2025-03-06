@@ -1,11 +1,6 @@
-import { FormDataProps } from "@/types/type";
+import { Button } from "@/components/ui/button";
+import { FormDataProps, HourSelectionProps } from "@/types/type";
 import React, { useEffect, useState } from "react";
-
-interface HourSelectionProps {
-  formData: FormDataProps; // Kullanıcının seçtiği saat dilimi.
-  setFormData: React.Dispatch<React.SetStateAction<{ time: string }>>;
-}
-
 
 const generateAllSlots = (start: number, end: number) => {
   const slots: string[] = [];
@@ -29,13 +24,15 @@ const HourSelection: React.FC<HourSelectionProps> = ({
         return;
       }
       try {
-        const res = await fetch(`/api/v1/barber/${formData.barberId}/${formData.date}`);
+        const res = await fetch(
+          `/api/v1/barber/${formData.barberId}/${formData.date}`
+        );
         if (res.ok) {
-          const data = await res.json(); 
-          console.log(data)
-          setBookedSlots(data.bookedSlots)
+          const data = await res.json();
+          console.log(data);
+          setBookedSlots(data);
         } else {
-          console.log(res)
+          console.log(res);
         }
       } catch (error) {
         console.log(error);
@@ -49,27 +46,26 @@ const HourSelection: React.FC<HourSelectionProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-4 gap-4 text-gray-900 w-92">
+    <div className="grid grid-cols-4 gap-4 w-92">
       {allSlots.map((slot) => {
         const isBooked = bookedSlots?.includes(slot);
         const isSelected = formData.time === slot;
-
         return (
-          <div
+          <Button
+            disabled={isBooked}
+            type="button"
             key={slot}
-            className={`p-4 rounded-lg shadow-md 
+            className={`p-4 rounded-lg shadow-md text-gray-900 bg-green-100 hover:bg-blue-300 cursor-pointer
+            
             ${
-              isBooked
-                ? "bg-gray-900 cursor-not-allowed text-red-500"
-                : "bg-green-100 hover:bg-blue-300 cursor-pointer"
-            }
-            ${isSelected ? "border-2 border-blue-500 bg-blue-400" : "border border-gray-300"}`}
+              isSelected
+                ? "border-2 border-blue-500 bg-blue-400"
+                : "border border-gray-300"
+            }`}
             onClick={() => !isBooked && handleSlotSelect(slot)}
           >
-            <span className="text-lg font-medium">
-              {slot} {isBooked && "(Dolu)"}
-            </span>
-          </div>
+            {slot}
+          </Button>
         );
       })}
     </div>

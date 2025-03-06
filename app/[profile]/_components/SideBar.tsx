@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const SideBar = () => {
-  const isAdmin = true
+  const isAdmin = false
   return (
     <div className="w-64 h-full bg-gray-800 text-gray-100 p-5 shadow-lg">
       <h2 className="border-b border-gray-700 pb-2 mb-4">Kontrol Paneli</h2>
@@ -12,12 +12,12 @@ const SideBar = () => {
           // Admin için içerikler
           <>
             <li className="my-4">
-              <Link href="/admin/add-project" className="text-gray-100 no-underline">
+              <Link href="/profile" className="text-gray-100 no-underline">
                 Randevular
               </Link>
             </li>
             <li className="my-4">
-              <Link href="/profile/müşteriler" className="text-gray-100 no-underline">
+              <Link href="/profile/customers" className="text-gray-100 no-underline">
                 Müşteriler
               </Link>
             </li>
@@ -33,12 +33,12 @@ const SideBar = () => {
           // Kullanıcı için içerikler
           <>
             <li className="my-4">
-              <Link href="/user/dashboard" className="text-gray-100 no-underline">
+              <Link href="/profile" className="text-gray-100 no-underline">
                 Randevularım
               </Link>
             </li>
             <li className="my-4">
-              <Link href="/user/profile" className="text-gray-100 no-underline">
+              <Link href="/randevu" className="text-gray-100 no-underline">
                 Yeni Randevu Al
               </Link>
             </li>

@@ -1,21 +1,19 @@
 "use client";
 
-import { FormDataProps } from "@/types/type";
-import { Appointment } from "@prisma/client";
+import { DateSelectionProps, FormDataProps } from "@/types/type";
 import React, { useState, useEffect } from "react";
 import { Calendar } from "react-date-range";
-import "react-date-range/dist/styles.css"; // Main style file
-import "react-date-range/dist/theme/default.css"; // Theme css file
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 
-interface DateSelectionProps {
-  güncellenecekTarih?: string;
-  formData: FormDataProps;
-  setFormData: React.Dispatch<React.SetStateAction<{ date: string }>>;
-  willBeUpdatedDay: string;
-}
-
-const DateSelection: React.FC<DateSelectionProps> = ({ formData, setFormData, willBeUpdatedDay }) => {
-  const [selectedDate, setSelectedDate] = useState<string>(willBeUpdatedDay || new Date().toISOString());
+const DateSelection: React.FC<DateSelectionProps> = ({
+  formData,
+  setFormData,
+  willBeUpdatedDay,
+}) => {
+  const [selectedDate, setSelectedDate] = useState<string>(
+    willBeUpdatedDay || new Date().toISOString()
+  );
 
   useEffect(() => {
     if (willBeUpdatedDay) {
@@ -27,15 +25,18 @@ const DateSelection: React.FC<DateSelectionProps> = ({ formData, setFormData, wi
 
   const handleDateChange = (date: Date) => {
     const dateString = date.toISOString();
+    console.log(dateString);
     setSelectedDate(dateString);
     setFormData({ ...formData, date: dateString });
   };
-  
+
   return (
     <div className="">
-      <Calendar date={new Date(selectedDate)} onChange={(date) => handleDateChange(date)} 
+      <Calendar
+        date={new Date(selectedDate)}
+        onChange={(date) => handleDateChange(date)}
         minDate={new Date()}
-        />
+      />
       <div>
         <p>Selected Date: {new Date(selectedDate).toDateString()}</p>
       </div>

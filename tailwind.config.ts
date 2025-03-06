@@ -53,7 +53,7 @@ export default {
   		},
   		backgroundImage: {
 			headerImage: "url('/header.jpg')",
-			whyImage: "url('https://media.istockphoto.com/id/1404502149/tr/foto%C4%9Fraf/man-looks-in-mirror-touch-hair-feels-concerned-due-receding.jpg?s=2048x2048&w=is&k=20&c=Mm9MM9nL2Tc-lHJKpmwd593sFtGWel67QNaTvUU0odc=')",
+			whyImage: "url('https://images.unsplash.com/photo-1599351431613-18ef1fdd27e1?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
 			footerImage: "url('https://plus.unsplash.com/premium_photo-1661380558859-40df8dd91dfd?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
 		  },
 		  
