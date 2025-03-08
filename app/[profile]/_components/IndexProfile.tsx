@@ -5,30 +5,28 @@ import { Edit2Icon, Loader2Icon, Trash2Icon } from "lucide-react";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserProfilProps } from "@/types/type";
-import { useSession } from "next-auth/react";
 
-const IndexProfile: React.FC<UserProfilProps> = ({ appointments = [] }) => {
-  console.log(appointments);
+const IndexProfile: React.FC<UserProfilProps> = ({ appointments: initialAppointments = [] }) => {
   const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(false);
-  const {data: session} =  useSession()
+  const [loadingIds, setLoadingIds] = useState<string[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments); // Appointments state eklendi
+
   const handleDelete = (appointmentId: string) => {
     const deleteAppointment = async () => {
       try {
-        setLoading(true);
+        setLoadingIds((prev) => [...prev, appointmentId]); // Sadece bu id için loading başlat
         const res = await fetch(`/api/v1/appointment/${appointmentId}`, {
           method: "DELETE",
         });
         if (res.ok) {
-          alert("Appointment deleted successfully");
-          setLoading(false);
+          setAppointments((prev) => prev.filter((appt) => appt.id !== appointmentId)); // Silinen randevuyu UI'dan çıkar
         } else {
-          alert("An error accour when deleted appointment!");
-          setLoading(false);
+          alert("An error occurred when deleting the appointment!");
         }
       } catch (error) {
         console.log(error);
-        setLoading(false);
+      } finally {
+        setLoadingIds((prev) => prev.filter((id) => id !== appointmentId)); // Loading state'i kaldır
       }
     };
     deleteAppointment();
@@ -53,7 +51,7 @@ const IndexProfile: React.FC<UserProfilProps> = ({ appointments = [] }) => {
               className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6 relative hover:shadow-xl transition-shadow"
             >
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Müşteri: {session?.user?.name}
+                Müşteri: {appointment.userName}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Tarih: {new Date(appointment.date).toLocaleDateString()}
@@ -68,17 +66,17 @@ const IndexProfile: React.FC<UserProfilProps> = ({ appointments = [] }) => {
                 <Edit2Icon
                   onClick={() => handleUpdate(appointment)}
                   size={20}
+                  className="cursor-pointer"
                 />
                 <Trash2Icon
                   onClick={() => handleDelete(appointment.id)}
                   size={20}
-                />{" "}
-                {loading ? (
+                  className="cursor-pointer"
+                />
+                {loadingIds.includes(appointment.id) && (
                   <span>
                     <Loader2Icon className="animate-spin" />
                   </span>
-                ) : (
-                  ""
                 )}
               </div>
             </div>

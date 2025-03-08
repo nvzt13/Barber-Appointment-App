@@ -46,7 +46,6 @@ const Page = () => {
             <thead>
               <tr className="bg-gray-800 text-white">
                 <th className="py-3 px-4 text-left">Name</th>
-                <th className="py-3 px-4 text-left">Surname</th>
                 <th className="py-3 px-4 text-left">Phone Number</th>
               </tr>
             </thead>
@@ -54,7 +53,6 @@ const Page = () => {
               {users.map((user) => (
                 <tr key={user.id} className="border-b hover:bg-gray-100">
                   <td className="py-2 px-4">{user.name}</td>
-                  <td className="py-2 px-4">{user.surname}</td>
                   <td className="py-2 px-4">555 555 5555</td>
                 </tr>
               ))}

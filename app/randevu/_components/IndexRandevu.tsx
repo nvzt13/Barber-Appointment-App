@@ -3,7 +3,7 @@
 import BarberSelection from "@/app/randevu/_components/BarberSelection";
 import DateSelection from "@/app/randevu/_components/DateSelection";
 import HourSelection from "@/app/randevu/_components/HourSelection";
-import { Appointment, Barber } from "@prisma/client";
+import { Appointment } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";

@@ -5,7 +5,7 @@ const AboutPage = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center  max-w-7xl mx-auto p-12">
       <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">Hakkımızda</h1>
       <p className="text-lg text-gray-600 dark:text-gray-300 text-center max-w-2xl mb-6">
-        Hair Studio'ya hoş geldiniz! Profesyonel berber ekibimiz, sizlere kaliteli tıraş ve bakım hizmetleri sunmaya adanmıştır. 
+        Hair Studio&apos;ya hoş geldiniz! Profesyonel berber ekibimiz, sizlere kaliteli tıraş ve bakım hizmetleri sunmaya adanmıştır. 
         Amacımız, bir sonraki tıraşınızı kolayca ayarlayabileceğiniz sorunsuz bir randevu deneyimi sunmak. 
         Uzman berberlerimizle, her müşterimizin en iyi görünümle ve kendini harika hissederek ayrılmasını sağlıyoruz.
       </p>

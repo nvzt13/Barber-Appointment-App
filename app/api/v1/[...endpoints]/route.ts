@@ -1,6 +1,6 @@
 // /api/v1/barber            GET-POST
 // /api/v1/barber/id         GET
-// /api/v1/barber/id/blog-slots?day=2025-12-12
+// /api/v1/barber/id/date
 
 // /api/v1/appointment      GET-POST
 // /api/v1/appointment/id
@@ -59,16 +59,16 @@ export async function PUT( request , { params }) {
 // handleGet
 export async function handleGet({
   endpoints,
-  request,
 }: HandleHTTPMethodsProps) {
-  const [table, id, date] = endpoints;
+  // item = date or appointment
+  const [table, id, item] = endpoints;
   switch (table) {
     case "barber":
-      if (id && date) {
+      if (id && item) {
     const appointments = await prisma.appointment.findMany({
       where: {
         barberId: id,
-        date: new Date(date),
+        date: new Date(item),
       },
       select: {
         time: true,
@@ -79,22 +79,26 @@ export async function handleGet({
   } 
       const barbers = await prisma.barber.findMany();
       return NextResponse.json(barbers);
-break
 
     case "user":
-      const isWantedAppointment = endpoints[2]
-      if (id && !isWantedAppointment) {
-        const user = await prisma.user.findMany({ where: { id } });
-        return NextResponse.json(user);
-      }
-      if(isWantedAppointment){
+      const admin = await prisma.user.findFirst({where:{id, role:"ADMIN"}})
+       //  api/v1/user/id/appointment   admin değilse userın randevularını dön    
+      if(item && !admin){
         const userAppointment = await prisma.appointment.findMany({where: {userId: id}})
         return NextResponse.json({message: "User appointment fetch succesfully!", data: userAppointment})
       }
-      // Tüm kullanıcıları döndür
+        // /api/user/id/appointment    admin ise bütün randevuları dön
+      else if(item && admin){
+        const allAppointments = await prisma.appointment.findMany()
+        return NextResponse.json({message: "All appointment fetch succesfully!", data: allAppointments})
+      }
+      // api/v1/user/id   admin mi? 
+      else if(!item && id){
+        return NextResponse.json({ isAdmin: !!admin });
+      }
+      //    /api/v1/user  tüm userları dön
       const users = await prisma.user.findMany();
       return NextResponse.json(users);
-
     case "appointment":
       if (id) {
         // Belirtilen id'li randevuyu döndür
@@ -123,7 +127,6 @@ export async function handlePost({
   
   const id = endpoints[1]
   const body = await request.json()
-  console.log(body.id, body.date, body.time, body.userId, body.barberId + "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
   switch (endpoints[0]) {
     case "barber":
       if (id) {
@@ -145,14 +148,14 @@ export async function handlePost({
         });
         return NextResponse.json(newBarber);
       } catch (error) {
+        console.log(error)
         return NextResponse.json(
           { message: "Failed to create barber" },
-          { status: 500 }
+          { status: 500 },
         );
       }
 
     case "appointment":
-      console.log(session?.user?.name + "44444444444444444444444444444444444")
       try {
         if ( !body.barberId || !body.date || !body.time) {
           return NextResponse.json(
@@ -164,7 +167,7 @@ export async function handlePost({
           data:{
             userId: body.userId,
             barberId: body.barberId,
-            userName: "nevzat",
+            userName: session?.user?.name,
             date: body.date,
             time: body.time
           }
@@ -182,7 +185,6 @@ export async function handlePost({
 // handleDelete
 export async function handleDelete({
   endpoints,
-  request,
 }: HandleHTTPMethodsProps) {
   const id = endpoints[1];
 

@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import SideBar from "./_components/SideBar";
 
 const AdminLaout = async ({ children }: { children: React.ReactNode }) => {

@@ -1,4 +1,4 @@
-import { Appointment, Barber } from "@prisma/client";
+import {  Barber } from "@prisma/client";
 import { headers } from "next/headers";
 import IndexRandevu from "./_components/IndexRandevu";
 

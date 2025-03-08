@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { FormDataProps, HourSelectionProps } from "@/types/type";
+import {  HourSelectionProps } from "@/types/type";
 import React, { useEffect, useState } from "react";
 
 const generateAllSlots = (start: number, end: number) => {

@@ -1,4 +1,5 @@
 import { BarberSelectionProps } from "@/types/type";
+import Image from "next/image";
 import React from "react";
 
 const BarberSelection: React.FC<BarberSelectionProps> = ({
@@ -21,9 +22,11 @@ const BarberSelection: React.FC<BarberSelectionProps> = ({
           }`}
           onClick={() => handleBarberSelect(barber.id)}
         >
-          <img
+          <Image
             src={barber.image}
             alt={barber.name}
+            width={50}
+            height={50}
             className="w-12 h-16 rounded-full object-cover"
           />
           <span className="text-lg font-medium text-gray-700">

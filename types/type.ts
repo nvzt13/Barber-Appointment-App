@@ -11,7 +11,7 @@ export interface FormDataProps {
 }
 
 export interface HTTPMethotsProps {
-  request: NextRequest;
+  request?: NextRequest;
   params: {
     endpoints: string[];
   };
@@ -19,7 +19,7 @@ export interface HTTPMethotsProps {
 
 export interface HandleHTTPMethodsProps {
   endpoints: string[];
-  request: NextRequest;
+  request?: NextRequest;
   session?: any
 }
 export interface ClientRandevuPageProps {

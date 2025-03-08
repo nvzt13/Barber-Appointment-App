@@ -1,6 +1,6 @@
 "use client";
 
-import { DateSelectionProps, FormDataProps } from "@/types/type";
+import { DateSelectionProps } from "@/types/type";
 import React, { useState, useEffect } from "react";
 import { Calendar } from "react-date-range";
 import "react-date-range/dist/styles.css";
@@ -21,7 +21,7 @@ const DateSelection: React.FC<DateSelectionProps> = ({
     } else {
       setFormData({ ...formData, date: new Date().toISOString() });
     }
-  }, [willBeUpdatedDay, setFormData]);
+  }, [willBeUpdatedDay, setFormData, formData]);
 
   const handleDateChange = (date: Date) => {
     const dateString = date.toISOString();
