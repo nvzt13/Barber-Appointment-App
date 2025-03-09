@@ -22,11 +22,7 @@ export interface HandleHTTPMethodsProps {
   request?: NextRequest;
   session?: any
 }
-export interface ClientRandevuPageProps {
-  barbers: Barber[];
-}
 export interface BarberSelectionProps {
-  barbers: Barber[];
   formData: { barberId: string };
   setFormData: React.Dispatch<React.SetStateAction<{ barberId: string }>>;
 }

@@ -8,9 +8,9 @@ import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { Loader2Icon } from "lucide-react";
-import { ClientRandevuPageProps, FormDataProps } from "@/types/type";
+import { FormDataProps } from "@/types/type";
 
-const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
+const IndexRandevu: React.FC = () => {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState<boolean>(false);
@@ -26,7 +26,7 @@ const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
     userId: parseAppointmentToBeUpdated?.userId || session?.user?.id || "",
     barberId: parseAppointmentToBeUpdated?.barberId || "",
     date: parseAppointmentToBeUpdated?.date
-      ? new Date(parseAppointmentToBeUpdated.date)
+      ? new Date(parseAppointmentToBeUpdated.date).toDateString()
       : new Date().toDateString(),
     time: parseAppointmentToBeUpdated?.time || "",
   });
@@ -82,7 +82,6 @@ const IndexRandevu: React.FC<ClientRandevuPageProps> = ({ barbers }) => {
           </h2>
         </div>
         <BarberSelection
-          barbers={barbers}
           formData={{ ...formData }}
           setFormData={setFormData}
         />

@@ -1,15 +1,34 @@
 import { BarberSelectionProps } from "@/types/type";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const BarberSelection: React.FC<BarberSelectionProps> = ({
-  barbers,
   formData,
   setFormData,
 }) => {
   const handleBarberSelect = (barberId: string) => {
     setFormData({ ...formData, barberId });
   };
+  const [barbers, setBarbers] = useState([])
+  useEffect(() => {
+    const fetchBarbers = async () => {
+      try {
+        const res = await fetch("/api/v1/barber", {
+          method: "GET",
+        });
+    
+        if (res.ok) {
+          const barbers = await res.json();
+          setBarbers(barbers)
+        } else {
+          console.log("Hata durumu:", res.status);
+        }
+      } catch (error) {
+        console.log("Sunucu hatası:", error);
+      }
+    };
+    fetchBarbers();
+  })
   return (
     <div className="flex flex-row flex-wrap items-center justify-center gap-6">
       {barbers?.map((barber) => (

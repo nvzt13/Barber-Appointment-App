@@ -1,13 +1,13 @@
 "use client";
 
 import { DateSelectionProps } from "@/types/type";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Calendar } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
+
 const DateSelection: React.FC<DateSelectionProps> = ({
-  formData,
   setFormData,
   willBeUpdatedDay,
 }) => {
@@ -15,19 +15,22 @@ const DateSelection: React.FC<DateSelectionProps> = ({
     willBeUpdatedDay || new Date().toISOString()
   );
 
-  useEffect(() => {
+  const updateFormData = useCallback(() => {
     if (willBeUpdatedDay) {
-      setFormData({ ...formData, date: willBeUpdatedDay });
+      setFormData((prevFormData) => ({ ...prevFormData, date: willBeUpdatedDay }));
     } else {
-      setFormData({ ...formData, date: new Date().toISOString() });
+      setFormData((prevFormData) => ({ ...prevFormData, date: new Date().toISOString() }));
     }
-  }, [willBeUpdatedDay, setFormData, formData]);
+  }, [willBeUpdatedDay, setFormData]);
+
+  useEffect(() => {
+    updateFormData();
+  }, [updateFormData]);
 
   const handleDateChange = (date: Date) => {
     const dateString = date.toISOString();
-    console.log(dateString);
     setSelectedDate(dateString);
-    setFormData({ ...formData, date: dateString });
+    setFormData((prevFormData) => ({ ...prevFormData, date: dateString }));
   };
 
   return (
