@@ -9,17 +9,17 @@ const BarberSelection: React.FC<BarberSelectionProps> = ({
   const handleBarberSelect = (barberId: string) => {
     setFormData({ ...formData, barberId });
   };
-  const [barbers, setBarbers] = useState([])
+  const [barbers, setBarbers] = useState([]);
   useEffect(() => {
     const fetchBarbers = async () => {
       try {
         const res = await fetch("/api/v1/barber", {
           method: "GET",
         });
-    
+
         if (res.ok) {
           const barbers = await res.json();
-          setBarbers(barbers)
+          setBarbers(barbers);
         } else {
           console.log("Hata durumu:", res.status);
         }
@@ -28,7 +28,7 @@ const BarberSelection: React.FC<BarberSelectionProps> = ({
       }
     };
     fetchBarbers();
-  })
+  }, []);
   return (
     <div className="flex flex-row flex-wrap items-center justify-center gap-6">
       {barbers?.map((barber) => (
