@@ -5,11 +5,6 @@ import { auth } from "@/auth";
 // GET
 export async function GET(request: NextRequest, { params }: { params: Promise<{ endpoints: string }> }) {
   const { endpoints } = await params;
-  const session = await auth();
-
-  if (!session || !session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
 
   const [table, id, item] = endpoints;
 
