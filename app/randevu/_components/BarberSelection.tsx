@@ -1,4 +1,5 @@
 import { BarberSelectionProps } from "@/types/type";
+import { Loader2Icon } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
@@ -31,7 +32,7 @@ const BarberSelection: React.FC<BarberSelectionProps> = ({
   }, []);
   return (
     <div className="flex flex-row flex-wrap items-center justify-center gap-6">
-      {barbers?.map((barber) => (
+      {barbers.length > 0 ? barbers?.map((barber) => (
         <div
           key={barber.id}
           className={`flex items-center space-x-4 p-5 border rounded-lg shadow-md cursor-pointer transition-colors ${
@@ -52,7 +53,9 @@ const BarberSelection: React.FC<BarberSelectionProps> = ({
             {barber.name}
           </span>
         </div>
-      ))}
+      ))
+      : <Loader2Icon className="animate-spin" />
+    }
     </div>
   );
 };

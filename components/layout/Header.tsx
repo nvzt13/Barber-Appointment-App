@@ -13,9 +13,9 @@ const Nav = () => {
       <nav className="container mx-auto flex items-center justify-between py-4 px-6">
         {/* Logo and Title */}
         <div className="flex items-center">
-          <Scissors className="text-white w-8 h-8" />
+          <Scissors className="text-sm sm:text-2xl md:text-3xl lg:text-4xl font-bold ml-2 text-white w-8 h-8" />
           <Link href="/">
-            <h1 className="text-2xl font-bold ml-2">Nevzat Berber</h1>
+          <h1 className="text-sm sm:text-2xl md:text-3xl lg:text-4xl font-bold ml-2">Nevzat Berber</h1>
           </Link>
         </div>
 
