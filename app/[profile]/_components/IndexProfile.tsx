@@ -2,14 +2,38 @@
 
 import { Appointment } from "@prisma/client";
 import { Edit2Icon, Loader2Icon, Trash2Icon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { UserProfilProps } from "@/types/type";
+import { useSession } from "next-auth/react";
 
-const IndexProfile: React.FC<UserProfilProps> = ({ appointments: initialAppointments = [] }) => {
+const IndexProfile: React.FC = () => {
+
   const router = useRouter();
   const [loadingIds, setLoadingIds] = useState<string[]>([]);
-  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments); // Appointments state eklendi
+  const [appointments, setAppointments] = useState<Appointment[]>(); // Appointments state eklendi
+
+  const {data: session} = useSession()
+
+useEffect(() => {
+  const fetchAppointments = async() => {
+    try {
+      const res = await fetch(`/api/v1/user/${session?.user?.id}/appointment`);
+  
+      if (res.ok) {
+        console.log("Randevular getirildi!");
+        const response = await res.json();
+        setAppointments(response.data)
+        console.log(res)
+      } else {
+        console.log("Randevular getirilirken bir hata oluştu!");
+        console.log(res)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  fetchAppointments()
+}, [])
 
   const handleDelete = (appointmentId: string) => {
     const deleteAppointment = async () => {
