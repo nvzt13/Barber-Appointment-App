@@ -17,7 +17,7 @@ const ProfilePage = async () => {
   }
 
   try {
-    const res = await fetch(`https://barber-appointment-app.vercel.app/api/v1/user/${session?.user.id}/appointment`, {
+    const res = await fetch(`https://barber-appointment-app.vercel.app/api/v1/user/${session?.user?.id}/appointment`, {
       method: "GET",
       headers: await headers(),
     });
