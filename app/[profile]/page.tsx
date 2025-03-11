@@ -7,7 +7,8 @@ import { Appointment } from '@prisma/client';
 const ProfilePage = async () => {
   let fetchedUserAppointment: Appointment[] = [];
   const session = await auth();
-  
+  console.log(session)
+  console.log(session?.user?.id)
   if (!session || !session.user.id) {
     return (
       <div>
@@ -26,9 +27,10 @@ const ProfilePage = async () => {
       console.log("Randevular getirildi!");
       const response = await res.json();
       fetchedUserAppointment = response.data
+      console.log(res)
     } else {
       console.log("Randevular getirilirken bir hata oluştu!");
-      console.log(res.status);
+      console.log(res)
     }
   } catch (error) {
     console.log(error);
