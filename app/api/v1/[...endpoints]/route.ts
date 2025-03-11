@@ -7,7 +7,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const { endpoints } = await params;
   const session = await auth();
 
-  if (!session || !session.user?.id) {
+  if (!session || !session?.user?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
